@@ -1,10 +1,13 @@
 #include <random>
+#include <string>
 #include <unordered_map>
 
 #include "BigInteger.h"
 #include "Macros.h"
 
 namespace E2EE {
+
+using ByteArray = std::basic_string<unsigned char>;
 
 class Engine
 {
@@ -15,6 +18,8 @@ public:
     BigInteger getKeyToSend(const std::string& user) const;
     void setReceivedKey(const std::string& user, const BigInteger& key);
     BigInteger getHash(const std::string& user) const;
+    ByteArray serialize() const;
+    bool deserialize(const ByteArray& data);
 
 private:
     int randomInteger();
