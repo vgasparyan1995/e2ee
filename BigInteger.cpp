@@ -332,6 +332,11 @@ std::string BigInteger::to_string() const
     return result;
 }
 
+std::vector<BigInteger::unit_t> BigInteger::raw_data() const
+{
+    return m_value;
+}
+
 std::ostream& operator<< (std::ostream& os, const BigInteger& n)
 {
     os << n.to_string();

@@ -60,6 +60,7 @@ public:
     const BigInteger operator-- (int);
 
     std::string to_string() const;
+    std::vector<unit_t> raw_data() const;
     friend std::ostream& operator<< (std::ostream& os, const BigInteger& n);
 
 private:

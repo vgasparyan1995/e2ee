@@ -4,10 +4,9 @@
 
 #include "BigInteger.h"
 #include "Macros.h"
+#include "Utility.h"
 
 namespace E2EE {
-
-using ByteArray = std::basic_string<unsigned char>;
 
 class Engine
 {

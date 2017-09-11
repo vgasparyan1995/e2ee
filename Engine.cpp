@@ -72,6 +72,21 @@ BigInteger Engine::getHash(const std::string& user) const
     return it->second;
 }
 
+ByteArray Engine::serialize() const
+{
+    return toByteArray(m_temporary) + toByteArray(m_permanent);
+}
+
+bool Engine::deserialize(const ByteArray& data)
+{
+    m_temporary.clear();
+    m_permanent.clear();
+    int bytesRead = 0;
+    bytesRead += fromByteArray(&data[bytesRead], m_temporary);
+    bytesRead += fromByteArray(&data[bytesRead], m_permanent);
+    return data.size() == bytesRead;
+}
+
 int Engine::randomInteger()
 {
     double r = 0.0;
