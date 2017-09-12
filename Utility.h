@@ -2,6 +2,8 @@
 
 #include <type_traits>
 
+#include "BigInteger.h"
+
 template <typename ContainerT>
 struct has_begin
 {
@@ -41,16 +43,19 @@ using ByteArray = std::basic_string<Byte>;
 
 template <typename NumericT>
 ByteArray toByteArray(const NumericT value, typename std::enable_if<std::is_arithmetic<NumericT>::value>::type* = nullptr);
+template <typename ContainerT>
+ByteArray toByteArray(const ContainerT& container, typename std::enable_if<is_stl_container<ContainerT>::value>::type* = nullptr);
+template <typename U, typename V>
+ByteArray toByteArray(const std::pair<U, V>& p);
+ByteArray toByteArray(const BigInteger& value);
+
 template <typename NumericT>
 int fromByteArray(const Byte* data, NumericT& value, typename std::enable_if<std::is_arithmetic<NumericT>::value>::type* = nullptr);
 template <typename ContainerT>
-ByteArray toByteArray(const ContainerT& container, typename std::enable_if<is_stl_container<ContainerT>::value>::type* = nullptr);
-template <typename ContainerT>
 int fromByteArray(const Byte* data, ContainerT& container, typename std::enable_if<is_stl_container<ContainerT>::value>::type* = nullptr);
 template <typename U, typename V>
-ByteArray toByteArray(const std::pair<U, V>& p);
-template <typename U, typename V>
 int fromByteArray(const Byte* data, std::pair<U, V>& p);
+int fromByteArray(const Byte* data, BigInteger& value);
 
 template <typename NumericT>
 ByteArray toByteArray(const NumericT value, typename std::enable_if<std::is_arithmetic<NumericT>::value>::type* /*= nullptr*/)
@@ -72,7 +77,7 @@ int fromByteArray(const Byte* data, NumericT& value, typename std::enable_if<std
 }
 
 template <typename ContainerT>
-ByteArray toByteArray(const ContainerT& container, typename std::enable_if<gix::utility::is_stl_container<ContainerT>::value>::type* /*= nullptr*/)
+ByteArray toByteArray(const ContainerT& container, typename std::enable_if<is_stl_container<ContainerT>::value>::type* /*= nullptr*/)
 {
     ByteArray result;
     result += toByteArray(static_cast<uint32_t>(container.size()));
@@ -83,7 +88,7 @@ ByteArray toByteArray(const ContainerT& container, typename std::enable_if<gix::
 }
 
 template <typename ContainerT>
-int fromByteArray(const Byte* data, ContainerT& container, typename std::enable_if<gix::utility::is_stl_container<ContainerT>::value>::type* /*= nullptr*/)
+int fromByteArray(const Byte* data, ContainerT& container, typename std::enable_if<is_stl_container<ContainerT>::value>::type* /*= nullptr*/)
 {
     int bytesRead = 0;
     uint32_t containerSize = 0;
@@ -91,7 +96,7 @@ int fromByteArray(const Byte* data, ContainerT& container, typename std::enable_
     for (uint32_t i = 0; i < containerSize; ++i) {
         typename ContainerT::value_type value;
         bytesRead += fromByteArray(data + bytesRead, value);
-        container.insert(container.end(), value); // A generic interface which provides almost every STL container
+        container.insert(container.end(), value);
     }
     return bytesRead;
 }
@@ -114,18 +119,4 @@ int fromByteArray(const Byte* data, std::pair<U, V>& p)
     bytesRead += fromByteArray(data + bytesRead, first);
     bytesRead += fromByteArray(data + bytesRead, second);
     return bytesRead;
-}
-
-#include "BigInteger.h"
-
-template <>
-ByteArray toByteArray<BigInteger>(const BigInteger& value)
-{
-    return toByteArray(value.raw_data());
-}
-
-template <>
-int fromByteArray(const Byte* data, BigInteger& value)
-{
-
 }

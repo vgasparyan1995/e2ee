@@ -337,6 +337,11 @@ std::vector<BigInteger::unit_t> BigInteger::raw_data() const
     return m_value;
 }
 
+void BigInteger::set_raw_data(const std::vector<unit_t>& data)
+{
+    m_value = data;
+}
+
 std::ostream& operator<< (std::ostream& os, const BigInteger& n)
 {
     os << n.to_string();
